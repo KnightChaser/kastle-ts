@@ -1,0 +1,5 @@
+# Ignore compiled Javascript files from TypeScript
+dist/
+
+# Ignore the node_modules directory
+node_modules/
