@@ -1,0 +1,2 @@
+# Register the .sql extension as a language
+*.sql linguist-detectable=true
