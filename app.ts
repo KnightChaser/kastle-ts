@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import registrationDuplicationCheck from "./db/users/registrationDuplicationCheck";
 import registration from "./db/users/registration";
+import login from "./db/users/login";
 dotenv.config();
 
 const app = express();
@@ -54,6 +55,25 @@ app.post("/register", async (request: express.Request, response: express.Respons
         
     } catch(error) {
         console.error(`Error occurred while registering a user: ${error}`);
+        response.status(500).send("Internal server error"); // Send the error message to the client
+    }
+});
+
+app.post("/login", async (request: express.Request, response: express.Response) => {
+    try {
+        const { username, password } = request.body;
+        if (!username || !password) {
+            return response.status(400).send("Either username or password is missing(or more)");
+        }
+
+        const loginStatus = await login(request, response);
+        if (loginStatus.status === 200) {
+            return response.status(200).send("User logged in successfully");
+        } else {
+            return response.status(400).send("Username or password is incorrect");
+        }
+    } catch(error) {
+        console.error(`Error occurred while logging in a user: ${error}`);
         response.status(500).send("Internal server error"); // Send the error message to the client
     }
 });

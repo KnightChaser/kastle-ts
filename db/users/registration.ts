@@ -15,7 +15,6 @@ const registration = async(request: Express.Request, response: Express.Response)
     try {
         const sqlPreparedStatement = `INSERT INTO ${process.env.MYSQL_USER_TABLE_NAME} (username, password, email) VALUES (?, ?, ?)`;
         const sqlPreparedStatementValues = [username, hashedPassword, email];
-
         const [rows, _] = await dbConnection.query<ResultSetHeader>(sqlPreparedStatement, sqlPreparedStatementValues);
 
         if (rows) {
