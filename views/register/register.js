@@ -1,4 +1,4 @@
-document.getElementById("registration-submit-button").addEventListener("click", function(event) {
+document.getElementById("registration-submit-button").addEventListener("click", function() {
 
     let username = document.getElementById('username').value;
     let email = document.getElementById('email').value;
@@ -44,23 +44,27 @@ document.getElementById("registration-submit-button").addEventListener("click", 
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({username: username, email: email, password: password}),
-    }).then((response) => {
+    }).then(async (response) => {
         if (response.status === 201) {
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: 'You have been registered!',
+                html: `Welcome <b>${username}</b>, You have been registered!`,
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = '/';
                 }
+                return;
             })
         } else {
+            const errorText = await response.text();
             Swal.fire({
                 icon: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong!',
+                title: 'Registration failed.',
+                text: errorText,
             })
         }
+    }).catch((error) => {
+        throw new Error(`Error during the registration process: ${error}`);
     })
 });

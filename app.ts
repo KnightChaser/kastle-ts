@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import dbSession from "./db/dbconnection";
 import path from "path";
+import registrationDuplicationCheck from "./db/users/registrationDuplicationCheck";
+import registration from "./db/users/registration";
 dotenv.config();
 
 const app = express();
@@ -35,20 +37,21 @@ app.post("/register", async (request: express.Request, response: express.Respons
             return response.status(400).send("Either username, password or email is missing(or more)");
         }
 
-        // Hash the password
-        const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_SALT_COUNT));
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // Check if the user already exists
+        const accountDuplicationStatus = await registrationDuplicationCheck(request, response);
+        if (accountDuplicationStatus.status === 400) {
+            // User already exists,,reject the registration
+            return response.status(400).send("Username or email already exists");
+        }
 
-        const dbConnection = await dbSession.getConnection();
-        let sqlPreparedStatement = `INSERT INTO ${process.env.MYSQL_USER_TABLE_NAME} (username, password, email) VALUES (?, ?, ?)`;
-        let sqlPreparedStatementValues = [username, hashedPassword, email];
-        const rows = await dbConnection.query(sqlPreparedStatement, sqlPreparedStatementValues);
-        dbConnection.release();
-
-        if (rows) {
+        // Process the registration normally
+        const accountRegistrationStatus = await registration(request, response);
+        if (accountRegistrationStatus.status === 201) {
+            // User registered successfully
             return response.status(201).send("User registered successfully");
         } else {
-            throw new Error(`Error occurred while registering a user: ${rows}`)
+            // Internal server error
+            return response.status(500).send("Internal server error");
         }
         
     } catch(error) {
