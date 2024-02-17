@@ -63,3 +63,7 @@ app.post("/register", async (request: express.Request, response: express.Respons
 app.get("/register", (request: express.Request, response: express.Response) => {
     response.sendFile(path.resolve(__dirname + "/../views/register/register.html"));
 });
+
+app.get("/login", (request: express.Request, response: express.Response) => {
+    response.sendFile(path.resolve(__dirname + "/../views/login/login.html"));   
+})
