@@ -47,6 +47,8 @@ CREATE TABLE users (
     Password VARCHAR(255) NOT NULL
 );
 ```
+- So, the user information will be stored like below picture. (`Password` is encrypted with BCrypt package at the server side.)
+![db_1](./readme_pictures/kastle_ts_db_1.png)
 
 3. Install NPM dependencies. Detailed requirements are described in `/package-lock.json` and `/package.json`.
 ```powershell
