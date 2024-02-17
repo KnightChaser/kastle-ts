@@ -1,4 +1,5 @@
-document.getElementById("registration-submit-button").addEventListener("click", function() {
+document.getElementById("registration-submit-button").addEventListener("click", function(event) {
+    event.preventDefault();
 
     let username = document.getElementById('username').value;
     let email = document.getElementById('email').value;

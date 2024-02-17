@@ -1,4 +1,6 @@
-document.getElementById("login-submit-button").addEventListener("click", async function () {
+document.getElementById("login-submit-button").addEventListener("click", async function (event) {
+    event.preventDefault();
+    
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
@@ -13,7 +15,7 @@ document.getElementById("login-submit-button").addEventListener("click", async f
     }
 
     // Send the login request to the server
-    await fetch("/login", {
+    fetch("/login", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -31,8 +33,7 @@ document.getElementById("login-submit-button").addEventListener("click", async f
                 if (result.isConfirmed) {
                     // Store the JWT token securely (e.g., in localStorage or cookies)
                     localStorage.setItem('jwtToken', responseData.token);
-
-                    // Redirect or navigate to the desired page
+                    // Redirect to the home page after clicking the SweetAlert2 message
                     window.location.href = "/";
                 }
             });
@@ -42,9 +43,6 @@ document.getElementById("login-submit-button").addEventListener("click", async f
                 icon: 'error',
                 title: 'Login failed.',
                 text: errorText,
-            }).then((result) => {
-                // Redirect or navigate to the desired page
-                window.location.href = "/";
             });
         }
     }).catch((error) => {
