@@ -1,6 +1,6 @@
 // registration.ts
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import dbSession from "../dbconnection";
+import dbSession from "../db/dbconnection";
 import Express from "express";
 import bcrypt from "bcryptjs";
 

@@ -42,6 +42,7 @@ document.getElementById("registration-submit-button").addEventListener("click", 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('jwtToken'),
         },
         body: JSON.stringify({username: username, email: email, password: password}),
     }).then(async (response) => {

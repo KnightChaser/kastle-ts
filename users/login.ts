@@ -1,7 +1,7 @@
 // login.ts
 // Based on the user information provided from the user, we will try authenticating the user credential.
 import { ResultSetHeader } from "mysql2";
-import dbSession from "../dbconnection";
+import dbSession from "../db/dbconnection";
 import Express from "express";
 import bcrypt from "bcryptjs";
 
@@ -39,7 +39,6 @@ const login = async(request: Express.Request, response: Express.Response) => {
 
         return { status: 200, message: "User logged in successfully" };
     } catch (error) {
-        console.error(`Error occurred while logging in a user: ${error}`);
         return { status: 500, message: "Internal server error" };
     } finally {
         dbConnection.release();

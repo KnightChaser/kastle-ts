@@ -1,4 +1,4 @@
-document.getElementById("login-submit-button").addEventListener("click", function() {
+document.getElementById("login-submit-button").addEventListener("click", async function () {
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
@@ -13,34 +13,46 @@ document.getElementById("login-submit-button").addEventListener("click", functio
     }
 
     // Send the login request to the server
-    // If successful, 200 is returned
-    fetch("/login", {
+    const response = await fetch("/login", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('jwtToken'),
         },
-        body: JSON.stringify({username: username, password: password}),
+        body: JSON.stringify({ username: username, password: password }),
     }).then(async (response) => {
         if (response.status === 200) {
+            const responseData = await response.json();
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
                 text: 'You have been logged in!'
             }).then((result) => {
-                // JWT Token or something else?
                 if (result.isConfirmed) {
-                    window.location.href = '/';
+                    // Store the JWT token securely (e.g., in localStorage or cookies)
+                    localStorage.setItem('jwtToken', responseData.token);
+
+                    // Redirect or navigate to the desired page
+                    window.location.href = "/";
                 }
-            })
+            });
         } else {
             const errorText = await response.text();
             Swal.fire({
                 icon: 'error',
-                title: 'Registration failed.',
+                title: 'Login failed.',
                 text: errorText,
-            })
+            }).then((result) => {
+                // Redirect or navigate to the desired page
+                window.location.href = "/";
+            });
         }
     }).catch((error) => {
-        throw new Error(`Error during the registration process: ${error}`);
+        console.error(`Error during the login process: ${error.message}`);
+        Swal.fire({
+            icon: 'error',
+            title: 'Login failed.',
+            text: error.message,
+        });
     });
 });

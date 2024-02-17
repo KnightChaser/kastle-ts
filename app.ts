@@ -2,9 +2,11 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
-import registrationDuplicationCheck from "./db/users/registrationDuplicationCheck";
-import registration from "./db/users/registration";
-import login from "./db/users/login";
+import registrationDuplicationCheck from "./users/registrationDuplicationCheck";
+import registration from "./users/registration";
+import login from "./users/login";
+import jwtTokenService from "./users/jsonwebtoken";
+import isAuthenticated from "./users/isAuthenticated";
 dotenv.config();
 
 const app = express();
@@ -17,13 +19,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/views", express.static(path.resolve(__dirname + "/../views")));
 
 // Import the dbSession from db/dbconnection.ts
-app.get("/", (request, response) => {
-  response.send("Hello World");
+app.get("/", (request: express.Request, response: express.Response) => {
+    response.sendFile(path.resolve(__dirname + "/../views/index.html"));
 });
 
 // Import the dbSession from db/dbconnection.ts
 app.listen(process.env.SERVER_ACCESS_PORT, () => {
-  console.log(`Server is running on port ${process.env.SERVER_ACCESS_PORT}`);
+    console.log(`Server is running on port ${process.env.SERVER_ACCESS_PORT}`);
 });
 
 // Register a new user to the database
@@ -60,6 +62,12 @@ app.post("/register", async (request: express.Request, response: express.Respons
 });
 
 app.post("/login", async (request: express.Request, response: express.Response) => {
+
+    // Reject the login request if the user is already logged in
+    if (isAuthenticated(request, response)) {
+        return response.status(400).send("User is already logged in");
+    }
+
     try {
         const { username, password } = request.body;
         if (!username || !password) {
@@ -68,7 +76,10 @@ app.post("/login", async (request: express.Request, response: express.Response) 
 
         const loginStatus = await login(request, response);
         if (loginStatus.status === 200) {
-            return response.status(200).send("User logged in successfully");
+            return response.status(200).send({
+                messsage: "User logged in successfully",
+                token: jwtTokenService.getToken(username)
+            });
         } else {
             return response.status(400).send("Username or password is incorrect");
         }
