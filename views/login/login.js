@@ -13,7 +13,7 @@ document.getElementById("login-submit-button").addEventListener("click", async f
     }
 
     // Send the login request to the server
-    const response = await fetch("/login", {
+    await fetch("/login", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
